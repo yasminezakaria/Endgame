@@ -40,6 +40,9 @@ public class EndgameState {
         this.warriors = warriors;
         this.stones = stones;
     }
+    public EndgameState copy(){
+        return new EndgameState(this.ironMan, this.stones, this.warriors, this.damage, this.snap);
+    }
 
     @Override
     public String toString() {

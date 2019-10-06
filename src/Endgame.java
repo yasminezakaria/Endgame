@@ -123,6 +123,8 @@ public class Endgame extends SearchProblem {
         Position ironmanPosition = state.ironMan;
 
         switch (operator) {
+            //TODO: Don't enter Thanos cell if he cannot snap
+            //TODO: Don't enter Warrior cell
             case "up":
                 if (ironmanPosition.row - 1 >= 0) return true;
                 else return false;
@@ -150,16 +152,21 @@ public class Endgame extends SearchProblem {
 
     public ArrayList<Position> killWarriors(Position ironMan, ArrayList<Position> warriors) {
         ArrayList<Position> adjWarriors = new ArrayList<>();
+        ArrayList<Position> updatedWarriors = new ArrayList<>();
+        // Make copy o warriors in actual warriors to avoid pass by reference
+        for (int i = 0; i<warriors.size();i++){
+            updatedWarriors.add(warriors.get(i));
+        }
         adjWarriors.add(new Position(ironMan.row - 1, ironMan.column));
         adjWarriors.add(new Position(ironMan.row + 1, ironMan.column));
         adjWarriors.add(new Position(ironMan.row, ironMan.column - 1));
         adjWarriors.add(new Position(ironMan.row, ironMan.column + 1));
         for (int i = 0; i < adjWarriors.size(); i++) {
-            int index = findObject(adjWarriors.get(i), warriors);
+            int index = findObject(adjWarriors.get(i), updatedWarriors);
             if(index != -1)
-                warriors.remove(index);
+                updatedWarriors.remove(index);
         }
-        return warriors;
+        return updatedWarriors;
     }
 
     public int findObject(Position element, ArrayList<Position> objects){
@@ -184,7 +191,7 @@ public class Endgame extends SearchProblem {
         SearchTreeNode parent = currentNode;
         int cost = currentNode.cost;
         int depth = currentNode.depth + 1;
-        EndgameState currentState = currentNode.state;
+        EndgameState currentState = currentNode.state;//.copy();
         int pathCost = pathCost(currentNode, operator);
         switch (operator) {
             case "up":
@@ -203,10 +210,14 @@ public class Endgame extends SearchProblem {
                 // TODO: remove all adjacent warriors
                 ArrayList<Position> updatedWarriors = killWarriors(currentState.ironMan, currentState.warriors);
                 pathCost = pathCost + (currentState.warriors.size() - updatedWarriors.size()) * 2;
-                return new SearchTreeNode(new EndgameState(currentState.ironMan, currentState.stones, currentState.warriors, pathCost - cost, false), parent, operator, pathCost, depth);
+                return new SearchTreeNode(new EndgameState(currentState.ironMan, currentState.stones, updatedWarriors, pathCost - cost, false), parent, operator, pathCost, depth);
             case "collect":
-                currentState.stones.remove(findObject(currentState.ironMan, currentState.stones));
-                return new SearchTreeNode(new EndgameState(currentState.ironMan, currentState.stones, currentState.warriors, pathCost - cost, false), parent, operator, pathCost, depth);
+                ArrayList<Position> updatedStones = new ArrayList<>();
+                for (int i=0;i<currentState.stones.size(); i++){
+                    updatedStones.add(currentState.stones.get(i));
+                }
+                updatedStones.remove(findObject(currentState.ironMan, currentState.stones));
+                return new SearchTreeNode(new EndgameState(currentState.ironMan, updatedStones, currentState.warriors, pathCost - cost, false), parent, operator, pathCost, depth);
             case "snap":
                 return new SearchTreeNode(new EndgameState(currentState.ironMan, currentState.stones, currentState.warriors, pathCost - cost, true), parent, operator, pathCost, depth);
 
@@ -224,6 +235,7 @@ public class Endgame extends SearchProblem {
         EndgameState state = currentNode.state;
         int cost = 0;
         switch (operator) {
+            // TODO: Add Cost in movement operator if the cell contains Thanos
             case "up":
                 if (adjWarriors(state.ironMan, state.warriors)) cost += 1;
                 if (adjThanos(state.ironMan)) cost += 5;
@@ -254,23 +266,27 @@ public class Endgame extends SearchProblem {
 
     @Override
     Queue<SearchTreeNode> BF(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        // TODO: prioritize the choice of the operators
+        if(currentNode.operator.equals("collect")){
+            System.out.println(currentNode.operator);
+            System.out.println(currentNode.state.stones.size());
+        }
+        // TODO: Remove priority of kill
         if (validOperator("snap", currentNode.state)){
             ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "snap"));
-            System.out.println("snap");
+//            System.out.println("snap");
         }
         else if (validOperator("collect", currentNode.state)) {
             ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "collect"));
-            System.out.println("collect");
+//            System.out.println("collect");
         } else if (validOperator("kill", currentNode.state)) {
             ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "kill"));
-            System.out.println("kill");
+//            System.out.println("kill");
         } else {
             for (int i = 0; i < operators.size() - 3; i++) {
-                System.out.println("Entered Operator Actions " + operators.get(i));
+//                System.out.println("Entered Operator Actions " + operators.get(i));
                 if (validOperator(operators.get(i), currentNode.state)) {
                     ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, operators.get(i)));
-                    System.out.println(nodes.size());
+//                    System.out.println(nodes.size());
                 }
             }
         }
