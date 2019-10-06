@@ -123,24 +123,29 @@ public class Endgame extends SearchProblem {
         ArrayList<Position> warriors = state.warriors;
         ArrayList<Position> stones = state.stones;
         Position ironmanPosition = state.ironMan;
+        Position ironmanUp = new Position(ironmanPosition.row-1, ironmanPosition.column);
+        Position ironmanDown = new Position(ironmanPosition.row+1, ironmanPosition.column);
+        Position ironmanLeft = new Position(ironmanPosition.row, ironmanPosition.column-1);
+        Position ironmanRight = new Position(ironmanPosition.row, ironmanPosition.column+1);
+
 
         switch (operator) {
             //TODO: Don't enter Thanos cell if he cannot snap
             //TODO: Don't enter Warrior cell
             case "up":
-                if (ironmanPosition.row - 1 >= 0 && (!(ironmanPosition.row - 1 == tx && stones.size() != 0)) && (findObject(ironmanPosition.row - 1, ironmanPosition.column, warriors) == -1))
+                if (ironmanUp.row >= 0 && (!(ironmanUp.equals(tx,ty) && stones.size() != 0)) && (findObject(ironmanUp, warriors) == -1))
                     return true;
                 else return false;
             case "down":
-                if (ironmanPosition.row + 1 < m && (!(ironmanPosition.row + 1 == tx && stones.size() != 0)) && (findObject(ironmanPosition.row + 1, ironmanPosition.column, warriors) == -1))
+                if (ironmanDown.row < m && (!(ironmanDown.equals(tx,ty) && stones.size() != 0)) && (findObject(ironmanDown, warriors) == -1))
                     return true;
                 else return false;
             case "left":
-                if (ironmanPosition.column - 1 >= 0 && (!(ironmanPosition.column - 1 == ty && stones.size() != 0)) && (findObject(ironmanPosition.row, ironmanPosition.column - 1, warriors) == -1))
+                if (ironmanLeft.column >= 0 && (!(ironmanLeft.equals(tx,ty) && stones.size() != 0)) && (findObject(ironmanLeft, warriors) == -1))
                     return true;
                 else return false;
             case "right":
-                if (ironmanPosition.column + 1 < n && (!(ironmanPosition.column + 1 == ty && stones.size() != 0)) && (findObject(ironmanPosition.row, ironmanPosition.column + 1, warriors) == -1))
+                if (ironmanRight.column < n && (!(ironmanRight.equals(tx,ty) && stones.size() != 0)) && (findObject(ironmanRight, warriors) == -1))
                     return true;
                 else return false;
             case "kill":
@@ -185,15 +190,6 @@ public class Endgame extends SearchProblem {
         return -1;
     }
 
-    public int findObject(int elementx, int elementy, ArrayList<Position> objects) {
-        for (int i = 0; i < objects.size(); i++) {
-            int x = objects.get(i).row;
-            int y = objects.get(i).column;
-            if (elementx == x && elementy == y)
-                return i;
-        }
-        return -1;
-    }
 
     public boolean repeatedState(EndgameState state) {
         for (int i = 0; i < expandedNodes.size(); i++) {
