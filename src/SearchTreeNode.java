@@ -19,4 +19,12 @@ public class SearchTreeNode {
         this.cost = cost;
         this.depth = depth;
     }
+    public String printPath(){
+        return printPathHelper("", this);
+    }
+    public String printPathHelper(String str, SearchTreeNode node){
+        if(node==null)
+            return str;
+        return printPathHelper(node.operator+" -> "+str, node.parent);
+    }
 }

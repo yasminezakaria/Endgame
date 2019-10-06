@@ -63,4 +63,36 @@ public class EndgameState {
 
 
     }
+
+    public boolean isEqual( EndgameState state) {
+        if (!state.ironMan.equals(this.ironMan.row, this.ironMan.column)) return false;
+        if(state.snap != this.snap) return false;
+        if(state.warriors.size() != this.warriors.size()) return false;
+        else{
+            for(int i = 0; i<state.warriors.size(); i++){
+                boolean found = false;
+                for (int j = 0; j<this.warriors.size(); j++){
+                    if(state.warriors.get(i).equals(this.warriors.get(j).row, this.warriors.get(j).column))
+                        found = true;
+
+                }
+                if (!found)
+                    return false;
+            }
+        }
+        if(state.stones.size() != this.stones.size()) return false;
+        else{
+            for(int i = 0; i<state.stones.size(); i++){
+                boolean found = false;
+                for (int j = 0; j<this.stones.size(); j++){
+                    if(state.stones.get(i).equals(this.stones.get(j).row, this.stones.get(j).column))
+                        found = true;
+
+                }
+                if (!found)
+                    return false;
+            }
+        }
+        return true;
+    }
 }

@@ -10,6 +10,8 @@ public class Main {
         SearchTreeNode solution = endgame.generic_search(searchStrategy);
 //        // call game method with strategy attribute -> returns the solution
 //        System.out.println(solution.state.toString());
+        if (solution == null)
+            return "There is no solution";
         return solution.cost + "";
 
     }

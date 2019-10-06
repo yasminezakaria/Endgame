@@ -8,6 +8,7 @@ public class Endgame extends SearchProblem {
     int n;
     int tx;
     int ty;
+    ArrayList<EndgameState> expandedNodes;
 //    char[][] planet;
 //    IronMan ironMan;
 
@@ -45,6 +46,7 @@ public class Endgame extends SearchProblem {
         this.initialState = (new EndgameState(ironmanPos, stones, warriors, 0, false)).toString();
         this.m = m;
         this.n = n;
+        this.expandedNodes = new ArrayList<>();
 
     }
 
@@ -78,16 +80,16 @@ public class Endgame extends SearchProblem {
         Position downWarriors = new Position(position.row + 1, position.column);
         Position leftWarriors = new Position(position.row, position.column - 1);
         Position rightWarriors = new Position(position.row, position.column + 1);
-        for (int i = 0; i< warriors.size(); i++){
+        for (int i = 0; i < warriors.size(); i++) {
             int x = warriors.get(i).row;
             int y = warriors.get(i).column;
-            if(upWarriors.equals(x,y))
+            if (upWarriors.equals(x, y))
                 return true;
-            if(leftWarriors.equals(x,y))
+            if (leftWarriors.equals(x, y))
                 return true;
-            if(rightWarriors.equals(x,y))
+            if (rightWarriors.equals(x, y))
                 return true;
-            if(downWarriors.equals(x,y))
+            if (downWarriors.equals(x, y))
                 return true;
         }
         return false;
@@ -108,10 +110,10 @@ public class Endgame extends SearchProblem {
     }
 
     public boolean stoneCell(Position position, ArrayList<Position> stones) {
-        for (int i = 0; i<stones.size(); i++){
+        for (int i = 0; i < stones.size(); i++) {
             int x = stones.get(i).row;
             int y = stones.get(i).column;
-            if(position.equals(x,y))
+            if (position.equals(x, y))
                 return true;
         }
         return false;
@@ -126,16 +128,20 @@ public class Endgame extends SearchProblem {
             //TODO: Don't enter Thanos cell if he cannot snap
             //TODO: Don't enter Warrior cell
             case "up":
-                if (ironmanPosition.row - 1 >= 0) return true;
+                if (ironmanPosition.row - 1 >= 0 && (!(ironmanPosition.row - 1 == tx && stones.size() != 0)) && (findObject(ironmanPosition.row - 1, ironmanPosition.column, warriors) == -1))
+                    return true;
                 else return false;
             case "down":
-                if (ironmanPosition.row + 1 < m) return true;
+                if (ironmanPosition.row + 1 < m && (!(ironmanPosition.row + 1 == tx && stones.size() != 0)) && (findObject(ironmanPosition.row + 1, ironmanPosition.column, warriors) == -1))
+                    return true;
                 else return false;
             case "left":
-                if (ironmanPosition.column - 1 >= 0) return true;
+                if (ironmanPosition.column - 1 >= 0 && (!(ironmanPosition.column - 1 == ty && stones.size() != 0)) && (findObject(ironmanPosition.row, ironmanPosition.column - 1, warriors) == -1))
+                    return true;
                 else return false;
             case "right":
-                if (ironmanPosition.column + 1 < n) return true;
+                if (ironmanPosition.column + 1 < n && (!(ironmanPosition.column + 1 == ty && stones.size() != 0)) && (findObject(ironmanPosition.row, ironmanPosition.column + 1, warriors) == -1))
+                    return true;
                 else return false;
             case "kill":
                 if (adjWarriors(ironmanPosition, warriors)) return true;
@@ -154,7 +160,7 @@ public class Endgame extends SearchProblem {
         ArrayList<Position> adjWarriors = new ArrayList<>();
         ArrayList<Position> updatedWarriors = new ArrayList<>();
         // Make copy o warriors in actual warriors to avoid pass by reference
-        for (int i = 0; i<warriors.size();i++){
+        for (int i = 0; i < warriors.size(); i++) {
             updatedWarriors.add(warriors.get(i));
         }
         adjWarriors.add(new Position(ironMan.row - 1, ironMan.column));
@@ -163,20 +169,38 @@ public class Endgame extends SearchProblem {
         adjWarriors.add(new Position(ironMan.row, ironMan.column + 1));
         for (int i = 0; i < adjWarriors.size(); i++) {
             int index = findObject(adjWarriors.get(i), updatedWarriors);
-            if(index != -1)
+            if (index != -1)
                 updatedWarriors.remove(index);
         }
         return updatedWarriors;
     }
 
-    public int findObject(Position element, ArrayList<Position> objects){
-        for (int i = 0; i<objects.size(); i++){
+    public int findObject(Position element, ArrayList<Position> objects) {
+        for (int i = 0; i < objects.size(); i++) {
             int x = objects.get(i).row;
             int y = objects.get(i).column;
-            if(element.equals(x,y))
+            if (element.equals(x, y))
                 return i;
         }
         return -1;
+    }
+
+    public int findObject(int elementx, int elementy, ArrayList<Position> objects) {
+        for (int i = 0; i < objects.size(); i++) {
+            int x = objects.get(i).row;
+            int y = objects.get(i).column;
+            if (elementx == x && elementy == y)
+                return i;
+        }
+        return -1;
+    }
+
+    public boolean repeatedState(EndgameState state) {
+        for (int i = 0; i < expandedNodes.size(); i++) {
+            if (state.isEqual(expandedNodes.get(i)))
+                return true;
+        }
+        return false;
     }
 
     public static void main(String[] args) {
@@ -213,7 +237,7 @@ public class Endgame extends SearchProblem {
                 return new SearchTreeNode(new EndgameState(currentState.ironMan, currentState.stones, updatedWarriors, pathCost - cost, false), parent, operator, pathCost, depth);
             case "collect":
                 ArrayList<Position> updatedStones = new ArrayList<>();
-                for (int i=0;i<currentState.stones.size(); i++){
+                for (int i = 0; i < currentState.stones.size(); i++) {
                     updatedStones.add(currentState.stones.get(i));
                 }
                 updatedStones.remove(findObject(currentState.ironMan, currentState.stones));
@@ -239,18 +263,22 @@ public class Endgame extends SearchProblem {
             case "up":
                 if (adjWarriors(state.ironMan, state.warriors)) cost += 1;
                 if (adjThanos(state.ironMan)) cost += 5;
+                if (state.ironMan.row==tx && state.ironMan.column==ty) cost +=5;
                 break;
             case "down":
                 if (adjWarriors(state.ironMan, state.warriors)) cost += 1;
                 if (adjThanos(state.ironMan)) cost += 5;
+                if (state.ironMan.row==tx && state.ironMan.column==ty) cost +=5;
                 break;
             case "left":
                 if (adjWarriors(state.ironMan, state.warriors)) cost += 1;
                 if (adjThanos(state.ironMan)) cost += 5;
+                if (state.ironMan.row==tx && state.ironMan.column==ty) cost +=5;
                 break;
             case "right":
                 if (adjWarriors(state.ironMan, state.warriors)) cost += 1;
                 if (adjThanos(state.ironMan)) cost += 5;
+                if (state.ironMan.row==tx && state.ironMan.column==ty) cost +=5;
                 break;
             //TODO: remove kill cost
             case "kill":
@@ -266,27 +294,34 @@ public class Endgame extends SearchProblem {
 
     @Override
     Queue<SearchTreeNode> BF(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        if(currentNode.operator.equals("collect")){
-            System.out.println(currentNode.operator);
-            System.out.println(currentNode.state.stones.size());
-        }
-        // TODO: Remove priority of kill
-        if (validOperator("snap", currentNode.state)){
-            ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "snap"));
-//            System.out.println("snap");
-        }
-        else if (validOperator("collect", currentNode.state)) {
-            ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "collect"));
+        if (!repeatedState(currentNode.state)) {
+            expandedNodes.add(currentNode.state);
+
+//        if(currentNode.operator.equals("snap"))
+//            System.out.println(currentNode.operator);
+//            if (currentNode.operator.equals("collect")) {
+//                System.out.println(currentNode.printPath());
+////            System.out.println(currentNode.operator);
+////            System.out.println(currentNode.state.warriors.size());
+////            if (currentNode.state.warriors.size() == 0)
+////                System.out.println("Damage: " + currentNode.state.damage);
+//            }
+            // TODO: Remove priority of kill
+            if (validOperator("snap", currentNode.state)) {
+                ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "snap"));
+                System.out.println("snap");
+                System.out.println(currentNode.printPath());
+            } else if (validOperator("collect", currentNode.state)) {
+                ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "collect"));
 //            System.out.println("collect");
-        } else if (validOperator("kill", currentNode.state)) {
-            ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "kill"));
-//            System.out.println("kill");
-        } else {
-            for (int i = 0; i < operators.size() - 3; i++) {
+            }
+            else {
+                for (int i = 0; i < operators.size() - 2; i++) {
 //                System.out.println("Entered Operator Actions " + operators.get(i));
-                if (validOperator(operators.get(i), currentNode.state)) {
-                    ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, operators.get(i)));
+                    if (validOperator(operators.get(i), currentNode.state)) {
+                        ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, operators.get(i)));
 //                    System.out.println(nodes.size());
+                    }
                 }
             }
         }
