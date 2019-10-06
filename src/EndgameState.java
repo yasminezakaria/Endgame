@@ -20,7 +20,7 @@ public class EndgameState {
         // needed in the Search_generic method
         System.out.println(state);
         String[] gridSplit = state.split(";");
-        this.ironMan = new Position(gridSplit[0].charAt(0), gridSplit[0].charAt(1));
+        this.ironMan = new Position(Integer.parseInt(gridSplit[0].charAt(0) + ""), Integer.parseInt(gridSplit[0].charAt(2)+""));
         String[] stonesIndices = gridSplit[1].split(",");
         String[] warriorsIndices = gridSplit[2].split(",");
         ArrayList<Position> warriors = new ArrayList<>();

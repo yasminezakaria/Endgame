@@ -34,9 +34,10 @@ public abstract class SearchProblem {
         Queue<SearchTreeNode> nodes = new LinkedList<>();
         ((LinkedList<SearchTreeNode>) nodes).push(root);
         while (!nodes.isEmpty()) {
-            System.out.println("Entered while loop");
+//            System.out.println("Entered while loop");
             SearchTreeNode node = ((LinkedList<SearchTreeNode>) nodes).pop();
-            System.out.println(nodes.size());
+            System.out.println("Nodes size = " + nodes.size());
+            System.out.println("Node operator = " + node.operator);
             if (this.goalTest(node))
                 return node;
             switch (strategy) {
