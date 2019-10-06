@@ -130,11 +130,11 @@ public class Endgame extends SearchProblem {
                 if (ironmanPosition.row + 1 < m) return true;
                 else return false;
             case "left":
-                if (ironmanPosition.column - 1 >= 0) return false;
-                else return true;
+                if (ironmanPosition.column - 1 >= 0) return true;
+                else return false;
             case "right":
-                if (ironmanPosition.column + 1 < n) return false;
-                else return true;
+                if (ironmanPosition.column + 1 < n) return true;
+                else return false;
             case "kill":
                 if (adjWarriors(ironmanPosition, warriors)) return true;
                 else return false;
@@ -257,20 +257,20 @@ public class Endgame extends SearchProblem {
         // TODO: prioritize the choice of the operators
         if (validOperator("snap", currentNode.state)){
             ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "snap"));
-//            System.out.println("Snap");
+            System.out.println("snap");
         }
         else if (validOperator("collect", currentNode.state)) {
             ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "collect"));
-//            System.out.println("Collect");
+            System.out.println("collect");
         } else if (validOperator("kill", currentNode.state)) {
             ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "kill"));
-//            System.out.println("Kill");
+            System.out.println("kill");
         } else {
             for (int i = 0; i < operators.size() - 3; i++) {
-//                System.out.println("Entered Operator Actions " + operators.get(i));
+                System.out.println("Entered Operator Actions " + operators.get(i));
                 if (validOperator(operators.get(i), currentNode.state)) {
                     ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, operators.get(i)));
-//                    System.out.println(nodes.size());
+                    System.out.println(nodes.size());
                 }
             }
         }

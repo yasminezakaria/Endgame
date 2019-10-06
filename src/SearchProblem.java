@@ -36,8 +36,8 @@ public abstract class SearchProblem {
         while (!nodes.isEmpty()) {
 //            System.out.println("Entered while loop");
             SearchTreeNode node = ((LinkedList<SearchTreeNode>) nodes).pop();
-            System.out.println("Nodes size = " + nodes.size());
-            System.out.println("Node operator = " + node.operator);
+//            System.out.println("Nodes size = " + nodes.size());
+//            System.out.println("Node operator = " + node.operator);
             if (this.goalTest(node))
                 return node;
             switch (strategy) {
