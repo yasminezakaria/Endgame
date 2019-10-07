@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class EndgameState {
     Position ironMan;
@@ -20,7 +21,7 @@ public class EndgameState {
         // needed in the Search_generic method
         System.out.println(state);
         String[] gridSplit = state.split(";");
-        this.ironMan = new Position(Integer.parseInt(gridSplit[0].charAt(0) + ""), Integer.parseInt(gridSplit[0].charAt(2)+""));
+        this.ironMan = new Position(Integer.parseInt(gridSplit[0].charAt(0) + ""), Integer.parseInt(gridSplit[0].charAt(2) + ""));
         String[] stonesIndices = gridSplit[1].split(",");
         String[] warriorsIndices = gridSplit[2].split(",");
         ArrayList<Position> warriors = new ArrayList<>();
@@ -40,7 +41,8 @@ public class EndgameState {
         this.warriors = warriors;
         this.stones = stones;
     }
-    public EndgameState copy(){
+
+    public EndgameState copy() {
         return new EndgameState(this.ironMan, this.stones, this.warriors, this.damage, this.snap);
     }
 
@@ -64,15 +66,15 @@ public class EndgameState {
 
     }
 
-    public boolean isEqual( EndgameState state) {
+    public boolean isEqual(EndgameState state) {
         if (!state.ironMan.equals(this.ironMan.row, this.ironMan.column)) return false;
-        if(state.snap != this.snap) return false;
-        if(state.warriors.size() != this.warriors.size()) return false;
-        else{
-            for(int i = 0; i<state.warriors.size(); i++){
+        if (state.snap != this.snap) return false;
+        if (state.warriors.size() != this.warriors.size()) return false;
+        else {
+            for (int i = 0; i < state.warriors.size(); i++) {
                 boolean found = false;
-                for (int j = 0; j<this.warriors.size(); j++){
-                    if(state.warriors.get(i).equals(this.warriors.get(j).row, this.warriors.get(j).column))
+                for (int j = 0; j < this.warriors.size(); j++) {
+                    if (state.warriors.get(i).equals(this.warriors.get(j).row, this.warriors.get(j).column))
                         found = true;
 
                 }
@@ -80,12 +82,12 @@ public class EndgameState {
                     return false;
             }
         }
-        if(state.stones.size() != this.stones.size()) return false;
-        else{
-            for(int i = 0; i<state.stones.size(); i++){
+        if (state.stones.size() != this.stones.size()) return false;
+        else {
+            for (int i = 0; i < state.stones.size(); i++) {
                 boolean found = false;
-                for (int j = 0; j<this.stones.size(); j++){
-                    if(state.stones.get(i).equals(this.stones.get(j).row, this.stones.get(j).column))
+                for (int j = 0; j < this.stones.size(); j++) {
+                    if (state.stones.get(i).equals(this.stones.get(j).row, this.stones.get(j).column))
                         found = true;
 
                 }
@@ -94,5 +96,30 @@ public class EndgameState {
             }
         }
         return true;
+    }
+
+    public void visualize(int m,  int n, int tx, int ty) {
+        char [][] planet = new char[m][n];
+        if (planet == null) {
+            planet = new char[m][n];
+        }
+        for (char[] row : planet)
+            Arrays.fill(row, '-');
+        planet[ironMan.row][ironMan.column] = 'I';
+        planet[tx][ty] = 'T';
+        for (int i = 0; i < stones.size(); i++) {
+            Position stone = stones.get(i);
+            planet[stone.row][stone.column] = 'S';
+        }
+        for (int i = 0; i < warriors.size(); i++) {
+            Position warrior = warriors.get(i);
+            planet[warrior.row][warrior.column] = 'W';
+        }
+        for (int i = 0; i < planet.length; i++) {
+            for (int j = 0; j < planet[i].length; j++) {
+                System.out.print(planet[i][j] + " ");
+            }
+            System.out.println();
+        }
     }
 }

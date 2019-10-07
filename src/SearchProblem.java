@@ -38,8 +38,11 @@ public abstract class SearchProblem {
             SearchTreeNode node = ((LinkedList<SearchTreeNode>) nodes).pop();
 //            System.out.println("Nodes size = " + nodes.size());
 //            System.out.println("Node operator = " + node.operator);
-            if (this.goalTest(node))
+            if (this.goalTest(node)){
+                System.out.println(node.cost);
+                System.out.println(node.printPath());
                 return node;
+            }
             switch (strategy) {
                 case BF:
                     nodes = BF(nodes, node);
