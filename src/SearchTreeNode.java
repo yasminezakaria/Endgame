@@ -29,11 +29,13 @@ public class SearchTreeNode {
 //                return printPathHelper(node.operator + " D = " + node.state.damage + " -> " + str, node.parent);
         //" P= " + node.state.ironMan.row + ", " + node.state.ironMan.column +
     }
-    public void visualize(int m, int n, int tx, int ty){
-        visualizeHelper( m,  n,  tx,  ty, this);
+
+    public void visualize(int m, int n, int tx, int ty) {
+        visualizeHelper(m, n, tx, ty, this);
     }
-    public void visualizeHelper(int m, int n, int tx, int ty, SearchTreeNode node){
-        if(node == null)
+
+    public void visualizeHelper(int m, int n, int tx, int ty, SearchTreeNode node) {
+        if (node == null)
             return;
         node.state.visualize(m, n, tx, ty);
         System.out.println();

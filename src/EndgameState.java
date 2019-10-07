@@ -42,10 +42,6 @@ public class EndgameState {
         this.stones = stones;
     }
 
-    public EndgameState copy() {
-        return new EndgameState(this.ironMan, this.stones, this.warriors, this.damage, this.snap);
-    }
-
     @Override
     public String toString() {
         String stonesString = "";
@@ -98,8 +94,8 @@ public class EndgameState {
         return true;
     }
 
-    public void visualize(int m,  int n, int tx, int ty) {
-        char [][] planet = new char[m][n];
+    public void visualize(int m, int n, int tx, int ty) {
+        char[][] planet = new char[m][n];
         if (planet == null) {
             planet = new char[m][n];
         }

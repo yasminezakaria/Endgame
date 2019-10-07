@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class Endgame extends SearchProblem {
     int m;
@@ -9,10 +6,8 @@ public class Endgame extends SearchProblem {
     int tx;
     int ty;
     ArrayList<EndgameState> expandedNodes;
-    char[][] planet;
-//    IronMan ironMan;
 
-    public Endgame(int m, int n, int ix, int iy, String grid) {
+    public Endgame(String grid) {
         this.operators = new ArrayList<>();
         operators.add("up");
         operators.add("down");
@@ -21,8 +16,10 @@ public class Endgame extends SearchProblem {
         operators.add("kill");
         operators.add("collect");
         operators.add("snap");
-        Position ironmanPos = new Position(ix, iy);
         String[] gridSplit = grid.split(";");
+        m = Integer.parseInt(gridSplit[0].charAt(0) + "");
+        n = Integer.parseInt(gridSplit[0].charAt(2) + "");
+        Position ironmanPos = new Position(Integer.parseInt(gridSplit[1].charAt(0) + ""), Integer.parseInt(gridSplit[1].charAt(2) + ""));
         tx = Integer.parseInt(gridSplit[2].charAt(0) + "");
         ty = Integer.parseInt(gridSplit[2].charAt(2) + "");
         String[] stonesIndices = gridSplit[3].split(",");
@@ -39,16 +36,13 @@ public class Endgame extends SearchProblem {
             int wy = Integer.parseInt(warriorsIndices[i + 1]);
             warriors.add(new Position(wx, wy));
         }
-//        intialize inherited initial state attribute
         System.out.println(tx + ", " + ty);
         System.out.println("Iron man " + ironmanPos.row + ", " + ironmanPos.column);
-
         this.initialState = (new EndgameState(ironmanPos, stones, warriors, 0, false)).toString();
-        this.m = m;
-        this.n = n;
         this.expandedNodes = new ArrayList<>();
 
     }
+
     public boolean adjWarriors(Position position, ArrayList<Position> warriors) {
         Position upWarriors = new Position(position.row - 1, position.column);
         Position downWarriors = new Position(position.row + 1, position.column);
