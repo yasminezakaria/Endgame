@@ -6,6 +6,7 @@ public class Endgame extends SearchProblem {
     int tx;
     int ty;
     ArrayList<EndgameState> expandedNodes;
+    int IDCutOff;
 
     public Endgame(String grid) {
         this.operators = new ArrayList<>();
@@ -40,6 +41,7 @@ public class Endgame extends SearchProblem {
         System.out.println("Iron man " + ironmanPos.row + ", " + ironmanPos.column);
         this.initialState = (new EndgameState(ironmanPos, stones, warriors, 0, false)).toString();
         this.expandedNodes = new ArrayList<>();
+        this.IDCutOff = 0;
 
     }
 
@@ -302,6 +304,23 @@ public class Endgame extends SearchProblem {
 
     @Override
     Queue<SearchTreeNode> ID(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        return null;
+        if(currentNode.depth <= IDCutOff) {
+            if (!repeatedState(currentNode.state)) {
+                expandedNodes.add(currentNode.state);
+//                System.out.println(expandedNodes.size());
+                if (validOperator("snap", currentNode.state)) {
+                    ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "snap"));
+                } else if (validOperator("collect", currentNode.state)) {
+                    ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "collect"));
+                } else {
+                    for (int i = 0; i < operators.size() - 2; i++) {
+                        if (validOperator(operators.get(i), currentNode.state)) {
+                            ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, operators.get(i)));
+                        }
+                    }
+                }
+            }
+        }
+            return nodes;
     }
 }
