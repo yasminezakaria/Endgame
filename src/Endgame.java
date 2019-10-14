@@ -37,8 +37,8 @@ public class Endgame extends SearchProblem {
             int wy = Integer.parseInt(warriorsIndices[i + 1]);
             warriors.add(new Position(wx, wy));
         }
-        System.out.println(tx + ", " + ty);
-        System.out.println("Iron man " + ironmanPos.row + ", " + ironmanPos.column);
+//        System.out.println(tx + ", " + ty);
+//        System.out.println("Iron man " + ironmanPos.row + ", " + ironmanPos.column);
         this.initialState = (new EndgameState(ironmanPos, stones, warriors, 0, false)).toString();
         this.expandedNodes = new ArrayList<>();
         this.IDCutOff = 0;
@@ -89,7 +89,8 @@ public class Endgame extends SearchProblem {
         return false;
     }
 
-    public boolean validOperator(String operator, EndgameState state) {
+    public boolean validOperator(String operator, SearchTreeNode node) {
+        EndgameState state = node.state;
         ArrayList<Position> warriors = state.warriors;
         ArrayList<Position> stones = state.stones;
         Position ironmanPosition = state.ironMan;
@@ -97,6 +98,7 @@ public class Endgame extends SearchProblem {
         Position ironmanDown = new Position(ironmanPosition.row + 1, ironmanPosition.column);
         Position ironmanLeft = new Position(ironmanPosition.row, ironmanPosition.column - 1);
         Position ironmanRight = new Position(ironmanPosition.row, ironmanPosition.column + 1);
+//        System.out.println("Current Cost so far: "+node.cost);
         switch (operator) {
             case "up":
                 if (ironmanUp.row >= 0 && (!(ironmanUp.equals(tx, ty) && stones.size() != 0)) && (findObject(ironmanUp, warriors) == -1))
@@ -121,10 +123,11 @@ public class Endgame extends SearchProblem {
                 if (stoneCell(ironmanPosition, stones)) return true;
                 else return false;
             case "snap":
-                return (state.damage < 100 && stones.isEmpty() && ironmanPosition.equals(tx, ty));
+                return (node.cost < 100 && stones.isEmpty() && ironmanPosition.equals(tx, ty));
             default:
                 return false;
         }
+
     }
 
     public ArrayList<Position> killWarriors(Position ironMan, ArrayList<Position> warriors) {
@@ -194,7 +197,7 @@ public class Endgame extends SearchProblem {
                 return new SearchTreeNode(new EndgameState(ironMan, currentState.stones, currentState.warriors, pathCost - cost, false), parent, operator, pathCost, depth);
             case "kill":
                 ArrayList<Position> updatedWarriors = killWarriors(currentState.ironMan, currentState.warriors);
-                pathCost = pathCost + (currentState.warriors.size() - updatedWarriors.size()) * 2;
+                pathCost = (currentState.warriors.size() - updatedWarriors.size()) * 2 + pathCost;
                 return new SearchTreeNode(new EndgameState(currentState.ironMan, currentState.stones, updatedWarriors, pathCost - cost, false), parent, operator, pathCost, depth);
             case "collect":
                 ArrayList<Position> updatedStones = new ArrayList<>();
@@ -247,12 +250,15 @@ public class Endgame extends SearchProblem {
                 break;
             case "kill":
                 cost += 0;
+                break;
             case "collect":
                 if (adjWarriors(state.ironMan, state.warriors)) cost += 1;
                 if (adjThanos(state.ironMan)) cost += 5;
                 cost += 3;
+                break;
             case "snap":
                 cost += 0;
+                break;
         }
 
         return currentNode.cost + cost;
@@ -262,13 +268,13 @@ public class Endgame extends SearchProblem {
     Queue<SearchTreeNode> BF(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
         if (!repeatedState(currentNode.state)) {
             expandedNodes.add(currentNode.state);
-            if (validOperator("snap", currentNode.state)) {
+            if (validOperator("snap", currentNode)) {
                 ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "snap"));
-            } else if (validOperator("collect", currentNode.state)) {
+            } else if (validOperator("collect", currentNode)) {
                 ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "collect"));
             } else {
                 for (int i = 0; i < operators.size() - 2; i++) {
-                    if (validOperator(operators.get(i), currentNode.state)) {
+                    if (validOperator(operators.get(i), currentNode)) {
                         ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, operators.get(i)));
                     }
                 }
@@ -279,16 +285,17 @@ public class Endgame extends SearchProblem {
 
     @Override
     Queue<SearchTreeNode> DF(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
+//        TODO: Check on pushing operators order (kill, movement)
         if (!repeatedState(currentNode.state)) {
             expandedNodes.add(currentNode.state);
-            System.out.println(expandedNodes.size());
-            if (validOperator("snap", currentNode.state)) {
+//            System.out.println(expandedNodes.size());
+            if (validOperator("snap", currentNode)) {
                 ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "snap"));
-            } else if (validOperator("collect", currentNode.state)) {
+            } else if (validOperator("collect", currentNode)) {
                 ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "collect"));
             } else {
                 for (int i = 0; i < operators.size() - 2; i++) {
-                    if (validOperator(operators.get(i), currentNode.state)) {
+                    if (validOperator(operators.get(i), currentNode)) {
                         ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, operators.get(i)));
                     }
                 }
@@ -304,23 +311,23 @@ public class Endgame extends SearchProblem {
 
     @Override
     Queue<SearchTreeNode> ID(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        if(currentNode.depth <= IDCutOff) {
+        if (currentNode.depth <= IDCutOff) {
             if (!repeatedState(currentNode.state)) {
                 expandedNodes.add(currentNode.state);
 //                System.out.println(expandedNodes.size());
-                if (validOperator("snap", currentNode.state)) {
+                if (validOperator("snap", currentNode)) {
                     ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "snap"));
-                } else if (validOperator("collect", currentNode.state)) {
+                } else if (validOperator("collect", currentNode)) {
                     ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "collect"));
                 } else {
                     for (int i = 0; i < operators.size() - 2; i++) {
-                        if (validOperator(operators.get(i), currentNode.state)) {
+                        if (validOperator(operators.get(i), currentNode)) {
                             ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, operators.get(i)));
                         }
                     }
                 }
             }
         }
-            return nodes;
+        return nodes;
     }
 }

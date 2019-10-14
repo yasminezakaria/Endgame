@@ -36,8 +36,8 @@ public abstract class SearchProblem {
         while (!nodes.isEmpty()) {
             SearchTreeNode node = ((LinkedList<SearchTreeNode>) nodes).pop();
             if (this.goalTest(node)) {
-                System.out.println(node.cost);
-                System.out.println(node.printPath());
+//                System.out.println(node.cost);
+//                System.out.println(node.printPath());
                 return node;
             }
             switch (strategy) {

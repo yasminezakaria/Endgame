@@ -25,7 +25,7 @@ public class SearchTreeNode {
     public String printPathHelper(String str, SearchTreeNode node) {
         if (node.parent == null)
             return str;
-        return printPathHelper(node.operator + "," + str, node.parent);
+        return printPathHelper(node.operator + "D= " + node.state.damage + "," + str, node.parent);
 //                return printPathHelper(node.operator + " D = " + node.state.damage + " -> " + str, node.parent);
         //" P= " + node.state.ironMan.row + ", " + node.state.ironMan.column +
     }

@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EndgameState {
+    //    TODO: Consider removing damage from state
     Position ironMan;
     ArrayList<Position> stones;
     ArrayList<Position> warriors;
