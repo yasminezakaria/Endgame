@@ -303,17 +303,18 @@ public class Endgame extends SearchProblem {
     }
 
     @Override
-    Queue<SearchTreeNode> BF(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
+    PriorityQueue<SearchTreeNode> BF(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
         if (!expandedNodes.contains(currentNode.state)) {
             expandedNodes.add(currentNode.state);
             if (validOperator("snap", currentNode)) {
-                ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "snap"));
+                nodes.add(transition(currentNode, "snap"));
             } else if (validOperator("collect", currentNode)) {
-                ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "collect"));
+                nodes.add(transition(currentNode, "collect"));
             } else {
                 for (int i = 0; i < operators.size() - 2; i++) {
                     if (validOperator(operators.get(i), currentNode)) {
-                        ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, operators.get(i)));
+                        nodes.add(transition(currentNode, operators.get(i)));
+
                     }
                 }
             }
@@ -322,19 +323,19 @@ public class Endgame extends SearchProblem {
     }
 
     @Override
-    Queue<SearchTreeNode> DF(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
+    PriorityQueue<SearchTreeNode> DF(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
 //        TODO: Check on pushing operators order (kill, movement)
         if (!expandedNodes.contains(currentNode.state)) {
             expandedNodes.add(currentNode.state);
 //            System.out.println(expandedNodes.size());
             if (validOperator("snap", currentNode)) {
-                ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "snap"));
+                nodes.add(transition(currentNode, "snap"));
             } else if (validOperator("collect", currentNode)) {
-                ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "collect"));
+                nodes.add(transition(currentNode, "collect"));
             } else {
                 for (int i = 0; i < operators.size() - 2; i++) {
                     if (validOperator(operators.get(i), currentNode)) {
-                        ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, operators.get(i)));
+                        nodes.add(transition(currentNode, operators.get(i)));
                     }
                 }
             }
@@ -343,42 +344,38 @@ public class Endgame extends SearchProblem {
     }
 
     @Override
-    Queue<SearchTreeNode> UC(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
+    PriorityQueue<SearchTreeNode> UC(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
         if (!expandedNodes.contains(currentNode.state)) {
             expandedNodes.add(currentNode.state);
             if (validOperator("snap", currentNode)) {
-                ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "snap"));
+                nodes.add(transition(currentNode, "snap"));
             } else if (validOperator("collect", currentNode)) {
-                ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "collect"));
+                nodes.add(transition(currentNode, "collect"));
             } else {
                 for (int i = 0; i < operators.size() - 2; i++) {
                     if (validOperator(operators.get(i), currentNode)) {
-                        ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, operators.get(i)));
+                        nodes.add(transition(currentNode, operators.get(i)));
                     }
                 }
             }
         }
-        ArrayList<SearchTreeNode> nodesList = new ArrayList(nodes);
-        Collections.sort(nodesList, Comparator.comparingInt(a -> a.cost));
-        nodes = new LinkedList<>(nodesList);
-
         return nodes;
     }
 
     @Override
-    Queue<SearchTreeNode> ID(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
+    PriorityQueue<SearchTreeNode> ID(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
         if (currentNode.depth <= IDCutOff) {
             if (!expandedNodes.contains(currentNode.state)) {
                 expandedNodes.add(currentNode.state);
 //                System.out.println(expandedNodes.size());
                 if (validOperator("snap", currentNode)) {
-                    ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "snap"));
+                    nodes.add(transition(currentNode, "snap"));
                 } else if (validOperator("collect", currentNode)) {
-                    ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "collect"));
+                    nodes.add(transition(currentNode, "collect"));
                 } else {
                     for (int i = 0; i < operators.size() - 2; i++) {
                         if (validOperator(operators.get(i), currentNode)) {
-                            ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, operators.get(i)));
+                            nodes.add(transition(currentNode, operators.get(i)));
                         }
                     }
                 }
@@ -388,7 +385,17 @@ public class Endgame extends SearchProblem {
     }
 
     @Override
-    Queue<SearchTreeNode> AS1(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
+    PriorityQueue<SearchTreeNode> GR1(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
+        return null;
+    }
+
+    @Override
+    PriorityQueue<SearchTreeNode> GR2(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
+        return null;
+    }
+
+    @Override
+    PriorityQueue<SearchTreeNode> AS1(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
 //        !repeatedState(currentNode.state)
 //        expandedNodes.contains(currentNode.state)
         if (!expandedNodes.contains(currentNode.state)) {
@@ -396,25 +403,26 @@ public class Endgame extends SearchProblem {
             if (validOperator("snap", currentNode)) {
                 SearchTreeNode n = transition(currentNode, "snap");
                 n.state.setHeuristicCost(heuristicValue(n.state));
-                ((LinkedList<SearchTreeNode>) nodes).addFirst(n);
+                nodes.add(n);
             } else if (validOperator("collect", currentNode)) {
                 SearchTreeNode n = transition(currentNode, "collect");
                 n.state.setHeuristicCost(heuristicValue(n.state));
-                ((LinkedList<SearchTreeNode>) nodes).addFirst(n);
+                nodes.add(n);
             } else {
                 for (int i = 0; i < operators.size() - 2; i++) {
                     if (validOperator(operators.get(i), currentNode)) {
                         SearchTreeNode n = transition(currentNode, operators.get(i));
                         n.state.setHeuristicCost(heuristicValue(n.state));
-                        ((LinkedList<SearchTreeNode>) nodes).addFirst(n);
+                        nodes.add(n);
                     }
                 }
             }
         }
-        ArrayList<SearchTreeNode> nodesList = new ArrayList(nodes);
-        Collections.sort(nodesList, Comparator.comparingInt(a -> a.state.heuristicCost + a.cost));
-        nodes = new LinkedList<>(nodesList);
-
         return nodes;
+    }
+
+    @Override
+    PriorityQueue<SearchTreeNode> AS2(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
+        return null;
     }
 }

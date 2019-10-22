@@ -18,23 +18,54 @@ public abstract class SearchProblem {
     abstract int pathCost(SearchTreeNode currentNode, String operator);
 
     // next function should call expansion function
-    abstract Queue<SearchTreeNode> BF(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode);
+//    TODO: Unify all method in one
+    abstract PriorityQueue<SearchTreeNode> BF(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
 
-    abstract Queue<SearchTreeNode> DF(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode);
+    abstract PriorityQueue<SearchTreeNode> DF(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
 
-    abstract Queue<SearchTreeNode> UC(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode);
+    abstract PriorityQueue<SearchTreeNode> UC(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
 
-    abstract Queue<SearchTreeNode> ID(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode);
+    abstract PriorityQueue<SearchTreeNode> ID(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
 
-    abstract Queue<SearchTreeNode> AS1(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode);
+    abstract PriorityQueue<SearchTreeNode> GR1(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
+
+    abstract PriorityQueue<SearchTreeNode> GR2(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
+
+    abstract PriorityQueue<SearchTreeNode> AS1(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
+
+    abstract PriorityQueue<SearchTreeNode> AS2(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
 
     SearchTreeNode generic_search(SearchStrategy strategy) {
         System.out.println("Entered Generic Search Method");
         SearchTreeNode root = new SearchTreeNode(new EndgameState(initialState), null, "", 0, 0);
-        Queue<SearchTreeNode> nodes = new LinkedList<>();
-        ((LinkedList<SearchTreeNode>) nodes).add(root);
+        PriorityQueue<SearchTreeNode> nodes = null;
+        switch (strategy) {
+            case BF:
+                nodes = new PriorityQueue<>(Comparator.comparingInt(o -> o.state.count));
+                break;
+            case DF:
+                nodes = new PriorityQueue<>(Collections.reverseOrder(Comparator.comparingInt(a -> a.state.count)));
+                break;
+            case ID:
+                nodes = new PriorityQueue<>(Collections.reverseOrder(Comparator.comparingInt(a -> a.state.count)));
+                break;
+            case UC:
+                nodes = new PriorityQueue<>(Comparator.comparingInt(a -> a.cost));
+                break;
+            case AS1:
+                nodes = new PriorityQueue<>(Comparator.comparingInt(a -> a.state.heuristicCost + a.cost));
+                break;
+            case AS2:
+                break;
+            case GR1:
+                break;
+            case GR2:
+                break;
+        }
+        nodes.add(root);
         while (!nodes.isEmpty()) {
-            SearchTreeNode node = ((LinkedList<SearchTreeNode>) nodes).pop();
+            SearchTreeNode node = nodes.remove();
+//            System.out.println(node.state.ID);
             if (this.goalTest(node)) {
 //                System.out.println(node.cost);
 //                System.out.println(node.printPath());
@@ -55,7 +86,6 @@ public abstract class SearchProblem {
                     break;
                 case AS1:
                     nodes = AS1(nodes, node);
-                    break;
                 case AS2:
                     break;
                 case GR1:

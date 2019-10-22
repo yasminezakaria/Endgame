@@ -6,6 +6,7 @@ import java.util.Random;
 
 public class Main {
     public static String solve(String grid, String strategy, boolean visualize) {
+        System.out.println(grid);
         SearchStrategy searchStrategy = SearchStrategy.valueOf(strategy);
         Endgame endgame = new Endgame(grid);
         SearchTreeNode solution = endgame.generic_search(searchStrategy);
@@ -80,8 +81,8 @@ public class Main {
     }
     public static void main(String[] args) {
 //        System.out.println(makeGrid(15,15));
-        System.out.println(solve("5,5;1,2;3,1;0,2,1,1,2,1,2,2,4,0,4,1;0,3,3,0,3,2,3,4,4,3", "UC", true));
+        System.out.println(solve("15,15;5,10;8,10;7,1,12,11,0,10,2,2,5,14,10,11;2,11,7,14,5,3,4,0,10,6", "UC", true));
 //        15,15;6,7;6,0,2,2,5,0,4,6,3,11,10,9;4,5,9,1,3,12,11,5,8,10
-//        System.out.println(solve(makeGrid(10,10), "BF", true));
+//        System.out.println(solve(makeGrid(15,15), "AS1", true));
     }
 }
