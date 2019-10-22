@@ -8,6 +8,11 @@ public class EndgameState {
     ArrayList<Position> warriors;
     int damage;
     boolean snap;
+    int heuristicCost = 0;
+
+    public void setHeuristicCost(int heuristicCost) {
+        this.heuristicCost = heuristicCost;
+    }
 
     public EndgameState(Position ironMan, ArrayList<Position> stones, ArrayList<Position> warriors, int damage, boolean snap) {
         this.ironMan = ironMan;

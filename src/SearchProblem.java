@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public abstract class SearchProblem {
     /*    Initial State
@@ -28,11 +26,13 @@ public abstract class SearchProblem {
 
     abstract Queue<SearchTreeNode> ID(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode);
 
+    abstract Queue<SearchTreeNode> AS1(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode);
+
     SearchTreeNode generic_search(SearchStrategy strategy) {
         System.out.println("Entered Generic Search Method");
         SearchTreeNode root = new SearchTreeNode(new EndgameState(initialState), null, "", 0, 0);
         Queue<SearchTreeNode> nodes = new LinkedList<>();
-        ((LinkedList<SearchTreeNode>) nodes).push(root);
+        ((LinkedList<SearchTreeNode>) nodes).add(root);
         while (!nodes.isEmpty()) {
             SearchTreeNode node = ((LinkedList<SearchTreeNode>) nodes).pop();
             if (this.goalTest(node)) {
@@ -52,6 +52,15 @@ public abstract class SearchProblem {
                     break;
                 case UC:
                     nodes = UC(nodes, node);
+                    break;
+                case AS1:
+                    nodes = AS1(nodes, node);
+                    break;
+                case AS2:
+                    break;
+                case GR1:
+                    break;
+                case GR2:
                     break;
             }
         }

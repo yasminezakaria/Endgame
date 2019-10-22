@@ -168,6 +168,38 @@ public class Endgame extends SearchProblem {
         return false;
     }
 
+    public int adjWarriorsCount(Position position, ArrayList<Position> warriors) {
+        Position upWarriors = new Position(position.row - 1, position.column);
+        Position downWarriors = new Position(position.row + 1, position.column);
+        Position leftWarriors = new Position(position.row, position.column - 1);
+        Position rightWarriors = new Position(position.row, position.column + 1);
+        int warriorsCount = 0;
+        for (int i = 0; i < warriors.size(); i++) {
+            int x = warriors.get(i).row;
+            int y = warriors.get(i).column;
+            if (upWarriors.equals(x, y))
+                warriorsCount++;
+            if (leftWarriors.equals(x, y))
+                warriorsCount++;
+            if (rightWarriors.equals(x, y))
+                warriorsCount++;
+            if (downWarriors.equals(x, y))
+                warriorsCount++;
+        }
+        return warriorsCount;
+
+    }
+
+    public int heuristicValue(EndgameState state) {
+        int adjWarriorsCost = 0;
+        int collectingStones = state.stones.size() * 3;
+        int adjThanosCost = 0;
+        for (int i = 0; i < state.stones.size(); i++) {
+            adjWarriorsCost += adjWarriorsCount(state.stones.get(i), state.warriors);
+            adjThanosCost += (adjThanos(state.stones.get(i)) ? 5 : 0);
+        }
+        return adjThanosCost + adjWarriorsCost + collectingStones;
+    }
     public static void main(String[] args) {
 
 
@@ -306,7 +338,25 @@ public class Endgame extends SearchProblem {
 
     @Override
     Queue<SearchTreeNode> UC(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        return null;
+        if (!repeatedState(currentNode.state)) {
+            expandedNodes.add(currentNode.state);
+            if (validOperator("snap", currentNode)) {
+                ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "snap"));
+            } else if (validOperator("collect", currentNode)) {
+                ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "collect"));
+            } else {
+                for (int i = 0; i < operators.size() - 2; i++) {
+                    if (validOperator(operators.get(i), currentNode)) {
+                        ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, operators.get(i)));
+                    }
+                }
+            }
+        }
+        ArrayList<SearchTreeNode> nodesList = new ArrayList(nodes);
+        Collections.sort(nodesList, Comparator.comparingInt(a -> a.cost));
+        nodes = new LinkedList<>(nodesList);
+
+        return nodes;
     }
 
     @Override
@@ -328,6 +378,35 @@ public class Endgame extends SearchProblem {
                 }
             }
         }
+        return nodes;
+    }
+
+    @Override
+    Queue<SearchTreeNode> AS1(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
+        if (!repeatedState(currentNode.state)) {
+            expandedNodes.add(currentNode.state);
+            if (validOperator("snap", currentNode)) {
+                SearchTreeNode n = transition(currentNode, "snap");
+                n.state.setHeuristicCost(heuristicValue(n.state));
+                ((LinkedList<SearchTreeNode>) nodes).addFirst(n);
+            } else if (validOperator("collect", currentNode)) {
+                SearchTreeNode n = transition(currentNode, "collect");
+                n.state.setHeuristicCost(heuristicValue(n.state));
+                ((LinkedList<SearchTreeNode>) nodes).addFirst(n);
+            } else {
+                for (int i = 0; i < operators.size() - 2; i++) {
+                    if (validOperator(operators.get(i), currentNode)) {
+                        SearchTreeNode n = transition(currentNode, operators.get(i));
+                        n.state.setHeuristicCost(heuristicValue(n.state));
+                        ((LinkedList<SearchTreeNode>) nodes).addFirst(n);
+                    }
+                }
+            }
+        }
+        ArrayList<SearchTreeNode> nodesList = new ArrayList(nodes);
+        Collections.sort(nodesList, Comparator.comparingInt(a -> a.state.heuristicCost));
+        nodes = new LinkedList<>(nodesList);
+
         return nodes;
     }
 }
