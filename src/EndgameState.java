@@ -27,7 +27,9 @@ public class EndgameState {
         // needed in the Search_generic method
         System.out.println(state);
         String[] gridSplit = state.split(";");
-        this.ironMan = new Position(Integer.parseInt(gridSplit[0].charAt(0) + ""), Integer.parseInt(gridSplit[0].charAt(2) + ""));
+        String[] iSplit = gridSplit[0].split(",");
+        this.ironMan  = new Position(Integer.parseInt(iSplit[0]+""), Integer.parseInt(iSplit[1]+ ""));
+//        this.ironMan = new Position(Integer.parseInt(gridSplit[0].charAt(0) + ""), Integer.parseInt(gridSplit[0].charAt(2) + ""));
         String[] stonesIndices = gridSplit[1].split(",");
         String[] warriorsIndices = gridSplit[2].split(",");
         ArrayList<Position> warriors = new ArrayList<>();
@@ -123,5 +125,33 @@ public class EndgameState {
             }
             System.out.println();
         }
+    }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int hashCode = 1;
+        for (Position e : warriors)
+            hashCode = 31*hashCode + (e==null ? 0 : e.hashCode());
+        for (Position e : stones)
+            hashCode = 31*hashCode + (e==null ? 0 : e.hashCode());
+        hashCode = prime * hashCode + ironMan.row;
+        hashCode = prime * hashCode + ironMan.column;
+        hashCode = prime * hashCode + heuristicCost;
+        hashCode = prime * hashCode + (snap ? 1 : 0);
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        EndgameState other = (EndgameState) obj;
+        return this.isEqual(other);
+
+
     }
 }

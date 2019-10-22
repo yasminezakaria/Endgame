@@ -5,7 +5,7 @@ public class Endgame extends SearchProblem {
     int n;
     int tx;
     int ty;
-    ArrayList<EndgameState> expandedNodes;
+    HashSet<EndgameState> expandedNodes;
     int IDCutOff;
 
     public Endgame(String grid) {
@@ -18,11 +18,14 @@ public class Endgame extends SearchProblem {
         operators.add("collect");
         operators.add("snap");
         String[] gridSplit = grid.split(";");
-        m = Integer.parseInt(gridSplit[0].charAt(0) + "");
-        n = Integer.parseInt(gridSplit[0].charAt(2) + "");
-        Position ironmanPos = new Position(Integer.parseInt(gridSplit[1].charAt(0) + ""), Integer.parseInt(gridSplit[1].charAt(2) + ""));
-        tx = Integer.parseInt(gridSplit[2].charAt(0) + "");
-        ty = Integer.parseInt(gridSplit[2].charAt(2) + "");
+        String[] sizeSplit = gridSplit[0].split(",");
+        m = Integer.parseInt(sizeSplit[0]+ "");
+        n = Integer.parseInt(sizeSplit[1]+ "");
+        String[] iSplit = gridSplit[1].split(",");
+        Position ironmanPos = new Position(Integer.parseInt(iSplit[0]+""), Integer.parseInt(iSplit[1]+ ""));
+        String[] tSplit = gridSplit[2].split(",");
+        tx = Integer.parseInt(tSplit[0] + "");
+        ty = Integer.parseInt(tSplit[1] + "");
         String[] stonesIndices = gridSplit[3].split(",");
         String[] warriorsIndices = gridSplit[4].split(",");
         ArrayList<Position> warriors = new ArrayList<>();
@@ -40,7 +43,7 @@ public class Endgame extends SearchProblem {
 //        System.out.println(tx + ", " + ty);
 //        System.out.println("Iron man " + ironmanPos.row + ", " + ironmanPos.column);
         this.initialState = (new EndgameState(ironmanPos, stones, warriors, 0, false)).toString();
-        this.expandedNodes = new ArrayList<>();
+        this.expandedNodes = new HashSet<>();
         this.IDCutOff = 0;
 
     }
@@ -161,10 +164,13 @@ public class Endgame extends SearchProblem {
 
 
     public boolean repeatedState(EndgameState state) {
-        for (int i = 0; i < expandedNodes.size(); i++) {
-            if (state.isEqual(expandedNodes.get(i)))
+//        for (int i = 0; i < expandedNodes.size(); i++) {
+//            if (state.isEqual(expandedNodes.get(i)))
+//                return true;
+//        }
+        for (EndgameState i : expandedNodes)
+            if(state.isEqual(i))
                 return true;
-        }
         return false;
     }
 
@@ -298,7 +304,7 @@ public class Endgame extends SearchProblem {
 
     @Override
     Queue<SearchTreeNode> BF(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        if (!repeatedState(currentNode.state)) {
+        if (!expandedNodes.contains(currentNode.state)) {
             expandedNodes.add(currentNode.state);
             if (validOperator("snap", currentNode)) {
                 ((LinkedList<SearchTreeNode>) nodes).addLast(transition(currentNode, "snap"));
@@ -318,7 +324,7 @@ public class Endgame extends SearchProblem {
     @Override
     Queue<SearchTreeNode> DF(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
 //        TODO: Check on pushing operators order (kill, movement)
-        if (!repeatedState(currentNode.state)) {
+        if (!expandedNodes.contains(currentNode.state)) {
             expandedNodes.add(currentNode.state);
 //            System.out.println(expandedNodes.size());
             if (validOperator("snap", currentNode)) {
@@ -338,7 +344,7 @@ public class Endgame extends SearchProblem {
 
     @Override
     Queue<SearchTreeNode> UC(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        if (!repeatedState(currentNode.state)) {
+        if (!expandedNodes.contains(currentNode.state)) {
             expandedNodes.add(currentNode.state);
             if (validOperator("snap", currentNode)) {
                 ((LinkedList<SearchTreeNode>) nodes).addFirst(transition(currentNode, "snap"));
@@ -362,7 +368,7 @@ public class Endgame extends SearchProblem {
     @Override
     Queue<SearchTreeNode> ID(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
         if (currentNode.depth <= IDCutOff) {
-            if (!repeatedState(currentNode.state)) {
+            if (!expandedNodes.contains(currentNode.state)) {
                 expandedNodes.add(currentNode.state);
 //                System.out.println(expandedNodes.size());
                 if (validOperator("snap", currentNode)) {
@@ -383,7 +389,9 @@ public class Endgame extends SearchProblem {
 
     @Override
     Queue<SearchTreeNode> AS1(Queue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        if (!repeatedState(currentNode.state)) {
+//        !repeatedState(currentNode.state)
+//        expandedNodes.contains(currentNode.state)
+        if (!expandedNodes.contains(currentNode.state)) {
             expandedNodes.add(currentNode.state);
             if (validOperator("snap", currentNode)) {
                 SearchTreeNode n = transition(currentNode, "snap");
@@ -404,7 +412,7 @@ public class Endgame extends SearchProblem {
             }
         }
         ArrayList<SearchTreeNode> nodesList = new ArrayList(nodes);
-        Collections.sort(nodesList, Comparator.comparingInt(a -> a.state.heuristicCost));
+        Collections.sort(nodesList, Comparator.comparingInt(a -> a.state.heuristicCost + a.cost));
         nodes = new LinkedList<>(nodesList);
 
         return nodes;
