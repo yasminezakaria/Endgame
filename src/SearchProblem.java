@@ -41,13 +41,13 @@ public abstract class SearchProblem {
         PriorityQueue<SearchTreeNode> nodes = null;
         switch (strategy) {
             case BF:
-                nodes = new PriorityQueue<>(Comparator.comparingInt(o -> o.state.count));
+                nodes = new PriorityQueue<>(Comparator.comparingInt(o -> o.state.ID));
                 break;
             case DF:
-                nodes = new PriorityQueue<>(Collections.reverseOrder(Comparator.comparingInt(a -> a.state.count)));
+                nodes = new PriorityQueue<>(Collections.reverseOrder(Comparator.comparingInt(a -> a.state.ID)));
                 break;
             case ID:
-                nodes = new PriorityQueue<>(Collections.reverseOrder(Comparator.comparingInt(a -> a.state.count)));
+                nodes = new PriorityQueue<>(Collections.reverseOrder(Comparator.comparingInt(a -> a.state.ID)));
                 break;
             case UC:
                 nodes = new PriorityQueue<>(Comparator.comparingInt(a -> a.cost));
@@ -56,16 +56,19 @@ public abstract class SearchProblem {
                 nodes = new PriorityQueue<>(Comparator.comparingInt(a -> a.state.heuristicCost + a.cost));
                 break;
             case AS2:
+                nodes = new PriorityQueue<>(Comparator.comparingInt(a -> a.state.heuristicCost + a.cost));
                 break;
             case GR1:
+                nodes = new PriorityQueue<>(Comparator.comparingInt(a -> a.state.heuristicCost));
                 break;
             case GR2:
+                nodes = new PriorityQueue<>(Comparator.comparingInt(a -> a.state.heuristicCost));
                 break;
         }
         nodes.add(root);
         while (!nodes.isEmpty()) {
             SearchTreeNode node = nodes.remove();
-//            System.out.println(node.state.ID);
+//            System.out.println(node.state.c);
             if (this.goalTest(node)) {
 //                System.out.println(node.cost);
 //                System.out.println(node.printPath());
@@ -87,10 +90,13 @@ public abstract class SearchProblem {
                 case AS1:
                     nodes = AS1(nodes, node);
                 case AS2:
+                    nodes = AS2(nodes, node);
                     break;
                 case GR1:
+                    nodes = GR1(nodes, node);
                     break;
                 case GR2:
+                    nodes = GR2(nodes, node);
                     break;
             }
         }

@@ -9,8 +9,8 @@ public class EndgameState {
     int damage;
     boolean snap;
     int heuristicCost = 0;
-    static int ID;
-    int count;
+    static int c;
+    int ID;
 
     public void setHeuristicCost(int heuristicCost) {
         this.heuristicCost = heuristicCost;
@@ -22,8 +22,8 @@ public class EndgameState {
         this.warriors = warriors;
         this.damage = damage;
         this.snap = snap;
-        this.count = ID;
-        ID++;
+        this.ID = c;
+        c++;
     }
 
     public EndgameState(String state) {

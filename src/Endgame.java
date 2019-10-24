@@ -196,7 +196,17 @@ public class Endgame extends SearchProblem {
 
     }
 
-    public int heuristicValue(EndgameState state) {
+    public int heuristicValue_2(EndgameState state) {
+//        int adjWarriorsCost = 0;
+        int collectingStones = state.stones.size() * 3;
+//        int adjThanosCost = 0;
+//        for (int i = 0; i < state.stones.size(); i++) {
+//            adjWarriorsCost += adjWarriorsCount(state.stones.get(i), state.warriors);
+//            adjThanosCost += (adjThanos(state.stones.get(i)) ? 5 : 0);
+//        }
+        return collectingStones;
+    }
+    public int heuristicValue_1(EndgameState state) {
         int adjWarriorsCost = 0;
         int collectingStones = state.stones.size() * 3;
         int adjThanosCost = 0;
@@ -386,13 +396,52 @@ public class Endgame extends SearchProblem {
 
     @Override
     PriorityQueue<SearchTreeNode> GR1(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        return null;
+        if (!expandedNodes.contains(currentNode.state)) {
+            expandedNodes.add(currentNode.state);
+            if (validOperator("snap", currentNode)) {
+                SearchTreeNode n = transition(currentNode, "snap");
+                n.state.setHeuristicCost(heuristicValue_1(n.state));
+                nodes.add(n);
+            } else if (validOperator("collect", currentNode)) {
+                SearchTreeNode n = transition(currentNode, "collect");
+                n.state.setHeuristicCost(heuristicValue_1(n.state));
+                nodes.add(n);
+            } else {
+                for (int i = 0; i < operators.size() - 2; i++) {
+                    if (validOperator(operators.get(i), currentNode)) {
+                        SearchTreeNode n = transition(currentNode, operators.get(i));
+                        n.state.setHeuristicCost(heuristicValue_1(n.state));
+                        nodes.add(n);
+                    }
+                }
+            }
+        }
+        return nodes;
     }
 
     @Override
     PriorityQueue<SearchTreeNode> GR2(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        return null;
-    }
+        if (!expandedNodes.contains(currentNode.state)) {
+            expandedNodes.add(currentNode.state);
+            if (validOperator("snap", currentNode)) {
+                SearchTreeNode n = transition(currentNode, "snap");
+                n.state.setHeuristicCost(heuristicValue_2(n.state));
+                nodes.add(n);
+            } else if (validOperator("collect", currentNode)) {
+                SearchTreeNode n = transition(currentNode, "collect");
+                n.state.setHeuristicCost(heuristicValue_2(n.state));
+                nodes.add(n);
+            } else {
+                for (int i = 0; i < operators.size() - 2; i++) {
+                    if (validOperator(operators.get(i), currentNode)) {
+                        SearchTreeNode n = transition(currentNode, operators.get(i));
+                        n.state.setHeuristicCost(heuristicValue_2(n.state));
+                        nodes.add(n);
+                    }
+                }
+            }
+        }
+        return nodes;    }
 
     @Override
     PriorityQueue<SearchTreeNode> AS1(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
@@ -402,17 +451,17 @@ public class Endgame extends SearchProblem {
             expandedNodes.add(currentNode.state);
             if (validOperator("snap", currentNode)) {
                 SearchTreeNode n = transition(currentNode, "snap");
-                n.state.setHeuristicCost(heuristicValue(n.state));
+                n.state.setHeuristicCost(heuristicValue_1(n.state));
                 nodes.add(n);
             } else if (validOperator("collect", currentNode)) {
                 SearchTreeNode n = transition(currentNode, "collect");
-                n.state.setHeuristicCost(heuristicValue(n.state));
+                n.state.setHeuristicCost(heuristicValue_1(n.state));
                 nodes.add(n);
             } else {
                 for (int i = 0; i < operators.size() - 2; i++) {
                     if (validOperator(operators.get(i), currentNode)) {
                         SearchTreeNode n = transition(currentNode, operators.get(i));
-                        n.state.setHeuristicCost(heuristicValue(n.state));
+                        n.state.setHeuristicCost(heuristicValue_1(n.state));
                         nodes.add(n);
                     }
                 }
@@ -423,6 +472,26 @@ public class Endgame extends SearchProblem {
 
     @Override
     PriorityQueue<SearchTreeNode> AS2(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode) {
-        return null;
+        if (!expandedNodes.contains(currentNode.state)) {
+            expandedNodes.add(currentNode.state);
+            if (validOperator("snap", currentNode)) {
+                SearchTreeNode n = transition(currentNode, "snap");
+                n.state.setHeuristicCost(heuristicValue_2(n.state));
+                nodes.add(n);
+            } else if (validOperator("collect", currentNode)) {
+                SearchTreeNode n = transition(currentNode, "collect");
+                n.state.setHeuristicCost(heuristicValue_2(n.state));
+                nodes.add(n);
+            } else {
+                for (int i = 0; i < operators.size() - 2; i++) {
+                    if (validOperator(operators.get(i), currentNode)) {
+                        SearchTreeNode n = transition(currentNode, operators.get(i));
+                        n.state.setHeuristicCost(heuristicValue_2(n.state));
+                        nodes.add(n);
+                    }
+                }
+            }
+        }
+        return nodes;
     }
 }

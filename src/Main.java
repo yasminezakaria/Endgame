@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 public class Main {
+//    TODO: Test all algorithms
     public static String solve(String grid, String strategy, boolean visualize) {
         System.out.println(grid);
         SearchStrategy searchStrategy = SearchStrategy.valueOf(strategy);
@@ -29,6 +30,8 @@ public class Main {
         return solutionPath.substring(0, solutionPath.length() - 1) + ";" + solution.cost + ";" + endgame.expandedNodes.size() + IDExpandedNodes;
 
     }
+
+//    TODO: Fix script for m*n matrix
 
     public static String makeGrid(int m, int n){
         StringBuilder out = new StringBuilder();
@@ -80,9 +83,10 @@ public class Main {
 
     }
     public static void main(String[] args) {
-//        System.out.println(makeGrid(15,15));
-        System.out.println(solve("15,15;5,10;8,10;7,1,12,11,0,10,2,2,5,14,10,11;2,11,7,14,5,3,4,0,10,6", "UC", true));
+        System.out.println(solve(makeGrid(4,10), "GR1", true));
+//        System.out.println(solve("15,15;5,10;8,10;7,1,12,11,0,10,2,2,5,14,10,11;2,11,7,14,5,3,4,0,10,6", "UC", true));
 //        15,15;6,7;6,0,2,2,5,0,4,6,3,11,10,9;4,5,9,1,3,12,11,5,8,10
-//        System.out.println(solve(makeGrid(15,15), "AS1", true));
+//        System.out.println(solve("5,5;1,2;3,1;0,2,1,1,2,1,2,2,4,0,4,1;0,3,3,0,3,2,3,4,4,3", "UC", true));
+//        System.out.println(solve("15,15;6,7;7,6;1,9,14,0,8,7,1,5,3,10,3,4;7,0,1,7,11,1,10,7,10,0", "GR1", true));
     }
 }
