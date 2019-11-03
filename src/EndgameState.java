@@ -2,25 +2,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EndgameState {
-    //    TODO: Consider removing damage from state
     Position ironMan;
     ArrayList<Position> stones;
     ArrayList<Position> warriors;
-    int damage;
     boolean snap;
     int heuristicCost = 0;
+//    Count of all class instances
     static int c;
+//    ID of the instance which the number of the instance
     int ID;
 
     public void setHeuristicCost(int heuristicCost) {
         this.heuristicCost = heuristicCost;
     }
 
-    public EndgameState(Position ironMan, ArrayList<Position> stones, ArrayList<Position> warriors, int damage, boolean snap) {
+    public EndgameState(Position ironMan, ArrayList<Position> stones, ArrayList<Position> warriors, boolean snap) {
         this.ironMan = ironMan;
         this.stones = stones;
         this.warriors = warriors;
-        this.damage = damage;
         this.snap = snap;
         this.ID = c;
         c++;
@@ -29,11 +28,9 @@ public class EndgameState {
     public EndgameState(String state) {
         // fill EndgameState from String given
         // needed in the Search_generic method
-        System.out.println(state);
         String[] gridSplit = state.split(";");
         String[] iSplit = gridSplit[0].split(",");
         this.ironMan  = new Position(Integer.parseInt(iSplit[0]+""), Integer.parseInt(iSplit[1]+ ""));
-//        this.ironMan = new Position(Integer.parseInt(gridSplit[0].charAt(0) + ""), Integer.parseInt(gridSplit[0].charAt(2) + ""));
         String[] stonesIndices = gridSplit[1].split(",");
         String[] warriorsIndices = gridSplit[2].split(",");
         ArrayList<Position> warriors = new ArrayList<>();
@@ -48,7 +45,6 @@ public class EndgameState {
             int wy = Integer.parseInt(warriorsIndices[i + 1]);
             warriors.add(new Position(wx, wy));
         }
-        this.damage = 0;
         this.snap = false;
         this.warriors = warriors;
         this.stones = stones;
@@ -68,9 +64,7 @@ public class EndgameState {
             if (i != warriors.size() - 1)
                 warriorsString += ",";
         }
-        System.out.println(stonesString);
         return ironMan.row + "," + ironMan.column + ";" + stonesString + ";" + warriorsString;
-
 
     }
 

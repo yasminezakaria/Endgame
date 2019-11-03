@@ -1,9 +1,4 @@
 public class SearchTreeNode {
-    //    State
-//    Parent Node
-//    Operator occurred
-//    Cost from Root
-//    Depth
     EndgameState state;
     SearchTreeNode parent;
     String operator;
@@ -18,6 +13,9 @@ public class SearchTreeNode {
         this.depth = depth;
     }
 
+    /*
+    Prints the sequence of operators done from the root
+    */
     public String printPath() {
         return printPathHelper("", this);
     }
@@ -25,9 +23,7 @@ public class SearchTreeNode {
     public String printPathHelper(String str, SearchTreeNode node) {
         if (node.parent == null)
             return str;
-        return printPathHelper(node.operator + "D= " + node.state.damage + "," + str, node.parent);
-//                return printPathHelper(node.operator + " D = " + node.state.damage + " -> " + str, node.parent);
-        //" P= " + node.state.ironMan.row + ", " + node.state.ironMan.column +
+        return printPathHelper(node.operator + "," + str, node.parent);
     }
 
     public void visualize(int m, int n, int tx, int ty) {

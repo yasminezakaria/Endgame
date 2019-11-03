@@ -1,12 +1,6 @@
 import java.util.*;
 
 public abstract class SearchProblem {
-    /*    Initial State
-        Set of Operators/ Actions
-        Transition Function
-        Goal Test Function
-        Path Cost Function
-    */
     String initialState;
     ArrayList<String> operators;
 
@@ -18,25 +12,9 @@ public abstract class SearchProblem {
     abstract int pathCost(SearchTreeNode currentNode, String operator);
 
     // next function should call expansion function
-//    TODO: Unify all method in one
-    abstract PriorityQueue<SearchTreeNode> BF(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
-
-    abstract PriorityQueue<SearchTreeNode> DF(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
-
-    abstract PriorityQueue<SearchTreeNode> UC(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
-
-    abstract PriorityQueue<SearchTreeNode> ID(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
-
-    abstract PriorityQueue<SearchTreeNode> GR1(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
-
-    abstract PriorityQueue<SearchTreeNode> GR2(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
-
-    abstract PriorityQueue<SearchTreeNode> AS1(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
-
-    abstract PriorityQueue<SearchTreeNode> AS2(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode);
-
+    abstract PriorityQueue<SearchTreeNode> InformedSearch(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode, SearchStrategy strategy);
+    abstract PriorityQueue<SearchTreeNode> UninformedSearch(PriorityQueue<SearchTreeNode> nodes, SearchTreeNode currentNode, SearchStrategy strategy);
     SearchTreeNode generic_search(SearchStrategy strategy) {
-        System.out.println("Entered Generic Search Method");
         SearchTreeNode root = new SearchTreeNode(new EndgameState(initialState), null, "", 0, 0);
         PriorityQueue<SearchTreeNode> nodes = null;
         switch (strategy) {
@@ -68,37 +46,13 @@ public abstract class SearchProblem {
         nodes.add(root);
         while (!nodes.isEmpty()) {
             SearchTreeNode node = nodes.remove();
-//            System.out.println(node.state.c);
             if (this.goalTest(node)) {
-//                System.out.println(node.cost);
-//                System.out.println(node.printPath());
                 return node;
             }
-            switch (strategy) {
-                case BF:
-                    nodes = BF(nodes, node);
-                    break;
-                case DF:
-                    nodes = DF(nodes, node);
-                    break;
-                case ID:
-                    nodes = ID(nodes, node);
-                    break;
-                case UC:
-                    nodes = UC(nodes, node);
-                    break;
-                case AS1:
-                    nodes = AS1(nodes, node);
-                case AS2:
-                    nodes = AS2(nodes, node);
-                    break;
-                case GR1:
-                    nodes = GR1(nodes, node);
-                    break;
-                case GR2:
-                    nodes = GR2(nodes, node);
-                    break;
-            }
+            if(strategy.equals(SearchStrategy.BF) || strategy.equals(SearchStrategy.DF) || strategy.equals(SearchStrategy.ID) || strategy.equals(SearchStrategy.UC))
+                nodes = UninformedSearch(nodes, node, strategy);
+            if(strategy.equals(SearchStrategy.AS1) || strategy.equals(SearchStrategy.AS2) || strategy.equals(SearchStrategy.GR1) || strategy.equals(SearchStrategy.GR2))
+                nodes = InformedSearch(nodes, node, strategy);
         }
 
         return null;
